@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup/Login Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>SPAD RELIEF FUND</h1>
+    <h2 id="form-title">Welcome</h2>
+    <div id="selection-screen">
+        <h3>Please choose an option:</h3>
+        <button onclick="showSignup()">Sign Up</button>
+        <button onclick="showLogin()">Log In</button>
+    </div>
+
+    <div id="signup-form" class="hidden">
+        <h2>Signup</h2>
+        <input type="text" id="employee-id" placeholder="Employee ID" required><br><br>
+        <input type="text" id="mobile-number" placeholder="Mobile Number" required><br><br>
+        <input type="date" id="date-of-joining" required><br><br>
+        <input type="text" id="pf-number" placeholder="PF Number" required><br><br>
+        <button onclick="sendOtp()">Send OTP</button>
+        <div id="otp-section" class="hidden">
+            <input type="text" id="otp" placeholder="Enter OTP" required><br><br>
+            <button onclick="verifyOtp()">Verify OTP</button>
+        </div>
+        <div id="set-password-section" class="hidden">
+            <input type="password" id="password" placeholder="Set Password" required><br><br>
+            <button onclick="signup()">Sign Up</button>
+        </div>
+    </div>
+
+    <div id="login-form" class="hidden">
+        <h2>Login</h2>
+        <input type="text" id="login-mobile" placeholder="Mobile Number or User ID" required><br><br>
+        <input type="password" id="login-password" placeholder="Password" required><br><br>
+        <button onclick="login()">Login</button>
+    </div>
+
+    <div id="user-details" class="hidden">
+        <h2>User Details</h2>
+        <p id="details"></p>
+        <p style="font-weight: bold; background-color: #e0f7fa; padding: 10px; border-radius: 5px;">Premium 500</p>
+        <button onclick="makePayment()">Make Payment</button>
+        <button onclick="showLogin()">Log Out</button>
+    </div>
+</div>
+
+<script>
+    let userDatabase = {};
+
+    function showSignup() {
+        document.getElementById('selection-screen').classList.add('hidden');
+        document.getElementById('signup-form').classList.remove('hidden');
+        document.getElementById('login-form').classList.add('hidden');
+        document.getElementById('user-details').classList.add('hidden');
+    }
+
+    function showLogin() {
+        document.getElementById('selection-screen').classList.add('hidden');
+        document.getElementById('login-form').classList.remove('hidden');
+        document.getElementById('signup-form').classList.add('hidden');
+        document.getElementById('user-details').classList.add('hidden');
+    }
+
+    function sendOtp() {
+        const mobileNumber = document.getElementById('mobile-number').value;
+        alert(`OTP sent to ${mobileNumber}`);
+        document.getElementById('otp-section').classList.remove('hidden');
+    }
+
+    function verifyOtp() {
+        const otp = document.getElementById('otp').value;
+        alert('OTP verified successfully!');
+        document.getElementById('set-password-section').classList.remove('hidden');
+    }
+
+    function signup() {
+        const employeeId = document.getElementById('employee-id').value;
+        const mobileNumber = document.getElementById('mobile-number').value;
+        const dateOfJoining = document.getElementById('date-of-joining').value;
+        const pfNumber = document.getElementById('pf-number').value;
+        const password = document.getElementById('password').value;
+
+        userDatabase[mobileNumber] = {
+            employeeId: employeeId,
+            mobileNumber: mobileNumber,
+            dateOfJoining: dateOfJoining,
+            pfNumber: pfNumber,
+            password: password
+        };
+        alert('Signup successful! You can now log in.');
+        showLogin();
+    }
+
+    function login() {
+        const loginMobile = document.getElementById('login-mobile').value;
+        const loginPassword = document.getElementById('login-password').value;
+
+        if (userDatabase[loginMobile] && userDatabase[loginMobile].password === loginPassword) {
+            const userDetails = userDatabase[loginMobile];
+            document.getElementById('details').innerText = `Employee ID: ${userDetails.employeeId}\nMobile Number: ${userDetails.mobileNumber}\nDate of Joining: ${userDetails.dateOfJoining}\nPF Number: ${userDetails.pfNumber}`;
+            document.getElementById('user-details').classList.remove('hidden');
+            document.getElementById('login-form').classList.add('hidden');
+        } else {
+            alert('Invalid mobile number or password. Redirecting to signup.');
+            showSignup();
+        }
+    }
+
+    function makePayment() {
+        alert('Payment for Premium 500 has been initiated!');
+        // Include real payment logic here
+    }
+</script>
+</body>
+</html>
