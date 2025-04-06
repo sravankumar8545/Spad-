@@ -1,0 +1,93 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Signup/Login System</title>
+</head>
+<body>
+    <div id="signup-form">
+        <h2>Signup</h2>
+        <input type="text" id="employee-id" placeholder="Employee ID"><br>
+        <input type="text" id="mobile-number" placeholder="Mobile Number"><br>
+        <input type="date" id="date-of-joining"><br>
+        <input type="text" id="pf-number" placeholder="PF Number"><br>
+        <input type="password" id="password" placeholder="Password"><br>
+        <button onclick="signup()">Signup</button>
+        <button onclick="showLogin()">Already have an account? Login</button>
+    </div>
+
+    <div id="login-form" class="hidden">
+        <h2>Login</h2>
+        <input type="text" id="login-mobile" placeholder="Mobile Number"><br>
+        <input type="password" id="login-password" placeholder="Password"><br>
+        <button onclick="login()">Login</button>
+        <button onclick="showSignup()">New user? Signup</button>
+    </div>
+
+    <div id="user-details" class="hidden">
+        <h2>User Details</h2>
+        <pre id="details"></pre>
+    </div>
+
+    <script>
+        function showLogin() {
+            document.getElementById('signup-form').classList.add('hidden');
+            document.getElementById('login-form').classList.remove('hidden');
+        }
+
+        function showSignup() {
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('signup-form').classList.remove('hidden');
+        }
+
+        function signup() {
+            const employeeId = document.getElementById('employee-id').value;
+            const mobileNumber = document.getElementById('mobile-number').value;
+            const dateOfJoining = document.getElementById('date-of-joining').value;
+            const pfNumber = document.getElementById('pf-number').value;
+            const password = document.getElementById('password').value;
+
+            fetch('/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ employeeId, mobileNumber, dateOfJoining, pfNumber, password })
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message);
+                if (data.message === 'Signup successful!') showLogin();
+            });
+        }
+
+        function login() {
+            const mobileNumber = document.getElementById('login-mobile').value;
+            const password = document.getElementById('login-password').value;
+
+            fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mobileNumber, password })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.user) {
+                    const userDetails = data.user;
+                    document.getElementById('details').innerText =
+                        `Employee ID: ${userDetails.employeeId}\nMobile Number: ${userDetails.mobileNumber}\nDate of Joining: ${userDetails.dateOfJoining}\nPF Number: ${userDetails.pfNumber}`;
+                    document.getElementById('user-details').classList.remove('hidden');
+                    document.getElementById('login-form').classList.add('hidden');
+                } else {
+                    alert(data.message);
+                    showSignup();
+                }
+            });
+        }
+    </script>
+
+    <style>
+        .hidden { display: none; }
+        input { margin: 5px; }
+    </style>
+</body>
+</html>
